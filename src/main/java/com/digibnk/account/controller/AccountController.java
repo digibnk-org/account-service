@@ -1,6 +1,7 @@
 package com.digibnk.account.controller;
 
 import com.digibnk.account.dto.AccountDTO;
+import com.digibnk.account.dto.BalanceUpdateRequest;
 import com.digibnk.account.dto.CreateAccountDTO;
 import com.digibnk.account.service.AccountService;
 import com.digibnk.common.dto.BaseResponse;
@@ -42,4 +43,16 @@ public class AccountController {
         List<AccountDTO> accounts = accountService.getAllAccounts();
         return ResponseEntity.ok(BaseResponse.success(accounts));
     }
+
+    /**
+     * Internal endpoint consumed by transaction-service via Feign Client.
+     */
+    @PatchMapping("/{id}/balance")
+    public ResponseEntity<BaseResponse<AccountDTO>> updateBalance(
+            @PathVariable Long id,
+            @Valid @RequestBody BalanceUpdateRequest request) {
+        AccountDTO account = accountService.updateBalance(id, request);
+        return ResponseEntity.ok(BaseResponse.success(account, "Balance updated successfully"));
+    }
 }
+

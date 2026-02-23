@@ -1,6 +1,7 @@
 package com.digibnk.account.service.impl;
 
 import com.digibnk.account.dto.AccountDTO;
+import com.digibnk.account.dto.BalanceUpdateRequest;
 import com.digibnk.account.dto.CreateAccountDTO;
 import com.digibnk.account.entity.Account;
 import com.digibnk.account.enums.AccountStatus;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public AccountDTO createAccount(CreateAccountDTO createAccountDTO) {
         log.info("Creating account for customer: {}", createAccountDTO.getCustomerId());
-        
+
         Account account = Account.builder()
                 .customerId(createAccountDTO.getCustomerId())
                 .accountType(createAccountDTO.getAccountType())
@@ -66,6 +66,31 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findAll().stream()
                 .map(accountMapper::toDTO)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public AccountDTO updateBalance(Long id, BalanceUpdateRequest request) {
+        log.info("Updating balance for account id: {} by amount: {}", id, request.getAmount());
+
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
+
+        if (account.getStatus() != AccountStatus.ACTIVE) {
+            throw new IllegalStateException("Account " + id + " is not active");
+        }
+
+        BigDecimal newBalance = account.getBalance().add(request.getAmount());
+
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalStateException("Insufficient funds in account " + id
+                    + ". Available: " + account.getBalance() + ", Required deduction: " + request.getAmount().abs());
+        }
+
+        account.setBalance(newBalance);
+        account = accountRepository.save(account);
+        log.info("Balance updated. Account: {}, New balance: {}", id, newBalance);
+        return accountMapper.toDTO(account);
     }
 
     private String generateAccountNumber() {
