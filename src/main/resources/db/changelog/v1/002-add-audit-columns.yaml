@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-audit-columns-account
+      author: digibnk
+      changes:
+        - addColumn:
+            tableName: account
+            columns:
+              - column:
+                  name: created_by
+                  type: VARCHAR(100)
+              - column:
+                  name: updated_by
+                  type: VARCHAR(100)
+      rollback:
+        - dropColumn:
+            tableName: account
+            columnName: created_by
+        - dropColumn:
+            tableName: account
+            columnName: updated_by
