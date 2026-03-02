@@ -2,6 +2,10 @@ server:
   port: ${SERVER_PORT:8082}
   forward-headers-strategy: framework  # reads X-Forwarded-* headers from gateway/load-balancer
 
+grpc:
+  server:
+    port: ${GRPC_SERVER_PORT:9082}
+
 spring:
   threads:
     virtual:

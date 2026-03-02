@@ -18,6 +18,7 @@
 		<java.version>21</java.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
+		<grpc-spring-boot-starter.version>3.1.0.RELEASE</grpc-spring-boot-starter.version>
 	</properties>
 
 	<dependencies>
@@ -93,6 +94,14 @@
 		<dependency>
 			<groupId>io.zipkin.reporter2</groupId>
 			<artifactId>zipkin-reporter-brave</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+
+		<!-- gRPC Server Starter -->
+		<dependency>
+			<groupId>net.devh</groupId>
+			<artifactId>grpc-server-spring-boot-starter</artifactId>
+			<version>${grpc-spring-boot-starter.version}</version>
 		</dependency>
 
 		<!-- Testing -->
